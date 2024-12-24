@@ -1,7 +1,4 @@
 from flask import Flask, request, jsonify, render_template
-import threading
-import requests
-import time
 
 app = Flask(__name__)
 
@@ -29,26 +26,5 @@ def send_gsm_data():
     print(f"Data received from web page: {data}")  # Log the received data in the terminal
     return jsonify({"status": "success", "message": "Data sent to GSM successfully"}), 200
 
-# Function to send data to Flask dynamically using user input
-def send_data_to_flask():
-    url = "http://127.0.0.1:5000/send-gsm-data"
-    while True:
-        data = input("Enter data to send to Flask: ")  # Prompt user for input
-        response = requests.post(url, json={"data": data})
-        if response.status_code == 200:
-            print("Data sent successfully!")
-        else:
-            print("Failed to send data!")
-
-# Function to start the Flask server in a separate thread
-def run_flask():
-    app.run(host='127.0.0.1', port=5000, debug=False, use_reloader=False)
-
-# Main script
 if __name__ == '__main__':
-    # Start the Flask server in a separate thread
-    flask_thread = threading.Thread(target=run_flask, daemon=True)
-    flask_thread.start()
-
-    # Start the user input loop in the main thread
-    send_data_to_flask()
+    app.run(host='0.0.0.0', port=5000)
