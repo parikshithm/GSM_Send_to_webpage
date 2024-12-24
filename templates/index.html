@@ -3,57 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GSM Module Communication</title>
+    <title>Real-Time GSM Data</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
         }
         textarea {
             width: 100%;
-            height: 150px;
+            height: 100px;
             margin-bottom: 20px;
-            padding: 10px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>GSM Module Communication</h1>
-        
-        <h3>Real-Time Data Received from Flask:</h3>
-        <textarea id="gsmData" readonly></textarea>
-        
-        <h3>Send Data to GSM Module:</h3>
-        <textarea id="sendData"></textarea>
-        <button onclick="sendDataToGSM()">Send</button>
-    </div>
+    <h1>GSM Module Communication</h1>
+
+    <h3>Send Data to GSM Module:</h3>
+    <textarea id="sendData"></textarea>
+    <button onclick="sendDataToFlask()">Send Data</button>
+
+    <h3>Real-Time Data Received from Flask:</h3>
+    <div id="realTimeData">Waiting for data...</div>
 
     <script>
-        // Function to fetch real-time data from Flask
-        async function fetchGSMData() {
-            try {
-                const response = await fetch('/get-gsm-data'); // Call Flask endpoint
-                const data = await response.json();
-                document.getElementById('gsmData').value = data.data; // Update the textarea with real-time data
-            } catch (error) {
-                console.error('Error fetching GSM data:', error);
-            }
-        }
-
         // Function to send data to Flask
-        async function sendDataToGSM() {
+        async function sendDataToFlask() {
             const data = document.getElementById('sendData').value;
             try {
                 const response = await fetch('/send-gsm-data', {
@@ -65,16 +40,27 @@
                 });
                 if (response.ok) {
                     alert('Data sent successfully!');
-                    document.getElementById('sendData').value = ""; // Clear the input field
+                    document.getElementById('sendData').value = ''; // Clear the input field
                 } else {
                     alert('Failed to send data!');
                 }
             } catch (error) {
-                console.error('Error sending data to GSM:', error);
+                console.error('Error sending data to Flask:', error);
             }
         }
 
-        // Periodically fetch data every 2 seconds
+        // Function to fetch real-time data from Flask
+        async function fetchGSMData() {
+            try {
+                const response = await fetch('/get-gsm-data');
+                const data = await response.json();
+                document.getElementById('realTimeData').innerText = data.data || 'No data yet';
+            } catch (error) {
+                console.error('Error fetching GSM data:', error);
+            }
+        }
+
+        // Fetch data every 2 seconds
         setInterval(fetchGSMData, 2000);
     </script>
 </body>
