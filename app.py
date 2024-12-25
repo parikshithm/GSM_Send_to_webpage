@@ -5,10 +5,13 @@ app = Flask(__name__)
 # Variable to store data (simulating GSM communication)
 gsm_data = ""
 
-# Route to serve the HTML page
+# Route to serve the HTML page and handle query parameters
 @app.route('/')
 def index():
-    return render_template('index.html')  # Ensure the HTML file is in a "templates" folder
+    # Get the "data" parameter from the URL
+    data_from_url = request.args.get('data', '')  # Default to an empty string if no data is provided
+    print(f"Data received via URL: {data_from_url}")  # Debug log for Render Logs
+    return render_template('index.html', url_data=data_from_url)
 
 # Endpoint to fetch real-time data (used by the webpage)
 @app.route('/get-gsm-data', methods=['GET'])
@@ -23,7 +26,7 @@ def send_gsm_data():
     # Get the data from the POST request
     data = request.json.get('data', '')
     gsm_data = data  # Update the global variable to simulate sending to the GSM module
-    print(f"Data received from web page: {data}")  # Log the received data in the terminal
+    print(f"Data received from web page: {data}")  # Log the received data in Render Logs
     return jsonify({"status": "success", "message": "Data sent to GSM successfully"}), 200
 
 if __name__ == '__main__':
